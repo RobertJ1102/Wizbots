@@ -1,23 +1,33 @@
 ```js
-# Not working - needs testing
+# Built for 2 clients, p2 will be scaled
+# Disable double click friend teleport and update p1 friend name in code
 ###deimos_expertmode
 
 # Block Portion
 
-block tp_to_sigil {
-    # TP to sigil
-    # Default zone: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_LandingZone
-    mass tp XYZ(-11.618746757507324, 5880.02783203125, 100.00003051757812)
-    sleep 1
-    mass walkto XYZ(-15.984509468078613, 6295.8046875, 100.00006103515625)
-    sleep 2
-}
-
-block use_sigil {
-    # Use sigil
-    mass sendkey X, 0.1
-    mass waitforzonechange completion
-    # Now in zone: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1_2
+block tp_to_sigil_and_use {
+    while inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_LandingZone {
+        # TP to sigil and use it
+        print Going to sigil
+        sleep 2
+        walkto XYZ(-36.59947204589844, 6191.037109375, 100.00009155273438)
+        sleep 2
+        if windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+            print Interacting with sigil...
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sleep 13
+	    } else {
+            print Sigil Failsafe Activated
+            tp XYZ(-36.59947204589844, 6191.037109375, 100.00009155273438)
+            sleep 1
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sleep 13
+        }
+    }
 }
 
 block grab_elixir {
@@ -26,122 +36,191 @@ block grab_elixir {
         print Elixir already acquired, skipping
     } else {
         # Elixir for everyone but p1
+        # GRAB ELIXIR
         print GRABBING ELIXIR
-        except p1 tp XYZ(46.81935501098633, 434.7252197265625, -274.8912048339844)
-        except p1 waitforpath ['WorldView', 'NPCRangeWin', 'imgBackground']
-        except p1 sendkey X, 0.1
-        sleep 0.1
-        except p1 sendkey X, 0.1
-        except p1 waitforpath ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton']
-        except p1 clickwindow ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton']
-        print ELIXIR ACQUIRED
-        sleep 5
+        until except p1 windowvisible ['WorldView', 'windowHUD', 'wndElixirContainer', 'sprtElixir1'] {
+            until except p1 hasxyz XYZ(46.819358825683594, 406.16522216796875, -274.8912048339844) {
+                except p1 tp XYZ(46.819358825683594, 406.16522216796875, -274.8912048339844)
+            }
+            until except p1 windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+                sleep 0.1
+            }
+            while except p1 windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+                except p1 sendkey X, 0.1
+            }
+            until except p1 windowvisible ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton'] {
+                sleep 0.1
+            }
+            while except p1 windowvisible ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton'] {
+                except p1 clickwindow ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton']
+            }
+        }
+        times 5 {
+            except p1 clickwindow ['WorldView', 'NPCServicesWin', 'wndDialogMain', 'Exit']
+        }
     }
 }
 
-block zone_change_1 {
+block zone_changes_to_gurtok {
+    # Zone changes to reach Gurtok
+    sleep 2
     # Zone change 1
-    mass tp XYZ(3821.3955078125, 10698.171875, -403.51507568359375)
+    print Zone change 1
+    p1 tp XYZ(3872.218017578125, 11489.134765625, -403.51519775390625)
+    p1 waitforzonechange completion
     sleep 1
-}
-
-block walk_into_zone_2 {
-    # Walk into zone 2
-    mass walkto XYZ(3775.5263671875, 11401.67578125, -277.0177307128906)
-    mass waitforzonechange completion
-    # Now in zone: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano_Cave3
-    sleep 1
-}
-
-block tp_to_zone_3_door {
-    # TP to zone 3 door
-    mass tp XYZ(-1485.54296875, -10534.1298828125, -2024.521484375)
-    sleep 1
-}
-
-block walk_into_zone_3 {
-    # Walk into zone 3
-    mass walkto XYZ(-901.6196899414062, -10509.5830078125, -1934.3839111328125)
-    mass waitforzonechange completion
-    # Now in zone: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1_2
-    sleep 1
-}
-
-block tp_to_elevator {
-    # TP to elevator
-    mass tp XYZ(-1362.7371826171875, 4742.02685546875, -5777.40673828125)
+    # Zone change 2
+    print Zone change 2
+    p1 tp XYZ(-775.92822265625, -10539.5693359375, -2404.1728515625)
+    p1 waitforzonechange completion
     sleep 1
 }
 
 block use_elevator {
-    # Walk onto elevator and activate
-    mass walkto XYZ(-1329.827392578125, 5545.05712890625, -5777.4228515625)
-    sleep 2
-    mass sendkey X, 0.1
-    mass sendkey X, 0.1
-    # Wait for elevator to reach the top (approx 24 seconds)
-    sleep 24
-}
-
-block walk_out_of_elevator {
-    # Walk out of elevator
-    mass walkto XYZ(-1264.4229736328125, 6503.68408203125, 4734.39453125)
-    sleep 2
-    # Ensure we are in the correct zone after exiting the elevator
-    while not inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+    # Teleport to elevator
+    if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1 {
+        print Teleporting to elevator...
+        p1 tp XYZ(-1374.6505126953125, 5575.81689453125, -5777.42236328125)
+        sleep 2
+        # Activate elevator
+        print Activating elevator...
+        mass sendkey X, 0.1
+        mass sendkey X, 0.1
+        mass sendkey X, 0.1
+        # Wait for elevator to reach the top
+        sleep 24
+    } else {
+        print ERROR: Not in the correct zone to use the elevator.  Attempting to fix....
+        while not p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1 {
+            print Fixing...
+            if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1_2 {
+                call zone_changes_to_gurtok
+            }
+            if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano_Cave3 {
+                p1 tp XYZ(-775.92822265625, -10539.5693359375, -2404.1728515625)
+                p1 waitforzonechange completion
+            }
+        }
         sleep 1
+        p1 tp XYZ(-1374.6505126953125, 5575.81689453125, -5777.42236328125)
+        sleep 2
+        # Activate elevator
+        mass sendkey X, 0.1
+        mass sendkey X, 0.1
+        mass sendkey X, 0.1
+        # Wait for elevator to reach the top
+        sleep 24
     }
 }
 
-block tp_to_crystal {
-    # TP near crystal
-    mass tp XYZ(-902.6307983398438, 1694.65478515625, 4734.23681640625)
-    sleep 1
+block exitElevator {
+    while not p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+    # Walk to Exit elevator
+    print Exiting elevator...
+    p1 walkto XYZ(-2.821014404296875, 483.7445068359375, -14.570587158203125)
+    sleep 5
+    }
 }
 
-block activate_crystal {
-    # Walk to and activate crystal
-    mass walkto XYZ(-1087.7169189453125, 1157.3712158203125, 4733.9189453125)
-    sleep 1
-    mass sendkey X, 0.1
-    sleep 2
+block healthMana {
+    if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+        # teleport all clients to p1
+        except p1 friendtp Kevin StormHunter
+        while not p2 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+            sleep 1
+        }
+        print Healing all clients...
+        sleep 1
+        entitytp Health
+        sleep 0.3
+        entitytp Mana
+        sleep 0.3
+        entitytp Health
+        sleep 0.3
+        entitytp Mana
+        sleep 0.3
+        entitytp Health
+        sleep 0.3
+        entitytp Mana
+        sleep 0.3
+        entitytp Health
+        sleep 0.3
+        entitytp Mana
+    } else {
+        print Not in the correct zone to heal.
+    }
 }
 
-block tp_to_door {
-    # TP to door
-    mass tp XYZ(-1350.284423828125, 10894.7216796875, 4734.22314453125)
-    sleep 1
+block crystal {
+    if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+        print Starting Crystal
+        times 2 {
+            # TP near crystal
+            sleep 0.3
+            p1 tp XYZ(-902.6307983398438, 1694.65478515625, 4734.23681640625)
+            sleep 1
+            # Walk to and activate crystal
+            p1 walkto XYZ(-1087.7169189453125, 1157.3712158203125, 4733.9189453125)
+            sleep 3
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sendkey X, 0.1
+            sleep 1
+        }
+    } else {
+        print Not in the correct zone to start the crystal.
+    }
 }
 
-block walk_into_door {
+block tp_to_locked_door {
+    print locked door
+    if p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano2 {
+        # TP to door
+        p1 tp XYZ(-1350.284423828125, 10894.7216796875, 4734.22314453125)
+        sleep 1
+    } else {
+        print Not in the correct zone to teleport to the door.
+    }
+}
+
+block walk_into_locked_door {
     # Walk into door
-    mass walkto XYZ(-1339.4818115234375, 11675.1474609375, 4734.2080078125)
-    mass waitforzonechange completion
+    print walk into locked door
+    p1 tp XYZ(-1339.4818115234375, 11675.1474609375, 4734.2080078125)
+    p1 waitforzonechange completion
     # Now in zone: DragonSpire/DS_A3_Kings/Interiors/DS_MalistaireLair
     sleep 1
 }
 
 block tp_to_minion_pre_boss {
     # TP to minion before boss
-    mass tp XYZ(828.63134765625, 8958.0673828125, 410.4039001464844)
+    p1 tp XYZ(828.63134765625, 8958.0673828125, 410.4039001464844)
     sleep 2
 }
 
 block engage_minion_fight {
     # Engage minion fight
-    mass walkto XYZ(1522.18310546875, 7888.48681640625, 410.4040222167969)
-    mass waitforcombat completion
+    print Engaging minion fight, teleporting all clients
+    while not p2 inzone DragonSpire/DS_A3_Kings/Interiors/DS_MalistaireLair {
+        # tp to p1
+        except p1 friendtp Kevin StormHunter
+        sleep 7
+        print Waiting for p2 to finish teleporting to p1
+    }
+    tp XYZ(1522.18310546875, 7888.48681640625, 410.4040222167969)
+    waitforcombat completion
 }
 
 block handle_cutscenes {
     # Handle cutscenes
-    sleep 10
+    sleep 2
+    print 1st cutscene
     mass tp XYZ(-402.6929931640625, 9342.6884765625, 410.4037170410156)
-    sleep 10
+    sleep 4
+    print 2nd cutscene
     mass walkto XYZ(-1635.5560302734375, 8926.9658203125, 626.3646240234375)
+    entitytp Malistaire-Boss-R10
     sleep 20
-    mass walkto XYZ(-1958.846435546875, 8581.6435546875, 626.3646850585938)
-    sleep 11
 }
 
 block heal_up_if_needed {
@@ -158,62 +237,68 @@ block walk_into_malistaire_fight {
 }
 
 block exit_dungeon {
-    # Exit dungeon
+    # Exit the dungeon
+    print Teleporting to spawn
     p1 clickwindow ['WorldView', 'windowHUD', 'compassAndTeleporterButtons', 'GoHomeButton']
-    mass waitforzonechange completion
-    # Now in zone: DragonSpire/DS_Hub_Cathedral
+    sleep 4
+    while not p1 inzone DragonSpire/DS_Hub_Cathedral {
+        print still not at spawn
+        sleep 4
+        p1 clickwindow ['WorldView', 'windowHUD', 'compassAndTeleporterButtons', 'GoHomeButton']
+    }
     sleep 2
-}
+    while p1 inzone DragonSpire/DS_Hub_Cathedral {
+        # Recall
+        print pressing recall
+        p1 clickwindow ['WorldView', 'windowHUD', 'compassAndTeleporterButtons', 'ResumeInstanceButton']
+        sleep 4
+    }
+    sleep 1
 
-block recall_back_to_dungeon {
-    # Recall back to dungeon
-    print pressing recall
-    p1 clickwindow ['WorldView', 'windowHUD', 'compassAndTeleporterButtons', 'ResumeInstanceButton']
-    mass waitforzonechange completion
-    # Now in zone: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_Volcano1_2
-    sleep 2
-}
-
-block tp_to_exit {
-    # TP to exit
+    # TP to exit of dungeon
+    print Teleporting to exit of dungeon
     p1 tp XYZ(243.9343719482422, -1400.333740234375, -274.8580322265625)
     sleep 2
-}
 
-block exit {
     # Exit
-    print Exit
-    mass tp XYZ(-101.14385986328125, 185.35235595703125, -41.03167724609375)
-    mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-    mass waitforzonechange completion
-    sleep 1
-    # Now at start: DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_LandingZone
+    print Exiting...
+    p1 tp XYZ(-101.14385986328125, 185.35235595703125, -41.03167724609375)
+    p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+    p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+    p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+    while not p1 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_LandingZone {
+        sleep 1
+        print Waiting for p1 to finish teleporting to dragon roost
+    }
+    sleep 3
+    # tp to p1
+    except p1 friendtp Kevin StormHunter
+    sleep 6
+    while not p2 inzone DragonSpire/DS_A3_Kings/DS_A3Z3_Volcano/DS_LandingZone {
+        # tp to p1
+        except p1 friendtp Kevin StormHunter
+        sleep 6
+        print Waiting for p2 to finish teleporting to p1
+    }
 }
 
 # Bot Portion
 
-call tp_to_sigil
-call use_sigil
+call tp_to_sigil_and_use
 call grab_elixir
-call zone_change_1
-call walk_into_zone_2
-call tp_to_zone_3_door
-call walk_into_zone_3
-call tp_to_elevator
+call zone_changes_to_gurtok
 call use_elevator
-call walk_out_of_elevator
-call tp_to_crystal
-call activate_crystal
-call tp_to_door
-call walk_into_door
+call exitElevator
+call healthMana
+call crystal
+call tp_to_locked_door
+call walk_into_locked_door
 call tp_to_minion_pre_boss
 call engage_minion_fight
 call handle_cutscenes
 call heal_up_if_needed
 call walk_into_malistaire_fight
 call exit_dungeon
-call recall_back_to_dungeon
-call tp_to_exit
-call exit
+
 
 ```
