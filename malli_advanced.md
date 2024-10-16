@@ -1,6 +1,7 @@
 ```js
 # Built for 2 clients, p2 will be scaled
 # Disable double click friend teleport and update p1 friend name in code
+# This will farm a ton of spellements and lvl 50 gear
 ###deimos_expertmode
 
 # Block Portion

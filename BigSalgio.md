@@ -1,5 +1,4 @@
 ```js
-# incomplete
 ###deimos_expertmode
 
 block bg_sigil {
@@ -9,11 +8,18 @@ block bg_sigil {
         sleep 2
 
         # health Check
-        while not healthabove 90% {
-            print hp is below 90%
-            sleep 10
-            sendkey W, 0.1
-            sendkey S, 0.1
+        times 30 {
+            if p1 healthabove 90% {
+                break
+            }
+            print testing health
+            sleep 1
+        }
+
+        if p1 manabelow 6% {
+            p1 entitytp Mana
+            sleep 0.1
+            p1 tp XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
         }
 
         if windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
@@ -37,10 +43,15 @@ block bg_sigil {
 }
 
 block goto_elixir {
-    while inzone Celestia/CL_Hub {
+    while p2 inzone Celestia/CL_Hub {
         print Going to elixir
-        # walk
-        sleep 2
+        sleep 1
+        except p1 walkto XYZ(169.07508850097656, 11548.8544921875, -899.699951171875)
+        except p1 tp XYZ(29.151844024658203, 12400.830078125, -1026.8914794921875)
+        except p1 tp XYZ(29.151844024658203, 12400.830078125, -1026.8914794921875)
+        except p1 tp XYZ(-7.791812896728516, 13870.3427734375, -1099.699951171875)
+        except p1 tp XYZ(52.71698760986328, 15274.7724609375, -1049.6998291015625)
+        sleep 3
         if windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
             print Interacting with elixir...
             sendkey X, 0.1
@@ -48,8 +59,10 @@ block goto_elixir {
             sendkey X, 0.1
             sleep 13
         } else {
-            print Elixir Failsafe Activated
-            # walk
+            print Elixir Failsafe Activated (goto_elixir)
+            if p2 inzone Celestia/CL_Hub {
+                except p1 tp XYZ(52.71698760986328, 15274.7724609375, -1049.6998291015625)
+            }
             sleep 1
             sendkey X, 0.1
             sendkey X, 0.1
@@ -59,11 +72,122 @@ block goto_elixir {
     }
 }
 
-block elixir_sigil {
+block goto_elixir_backup {
+    print Elixir Failsafe2 Activated
+    if p2 inzone Celestia/CL_Hub {
+        except p1 tp XYZ(52.71698760986328, 15274.7724609375, -1049.6998291015625)
+    }
+    sleep 1
+    sendkey X, 0.1
+    sendkey X, 0.1
+    sendkey X, 0.1
+    sleep 13
+}
+
+block elixir {
+    # at this point the user should be in Celestia/CL_Z12_Test_of_the_Spheres/StarRoom
+    loop {
+        print Loading...
+        if not loading {
+            sleep 1
+            break
+        }
+    }
+    sleep 2
+    except p1 tp XYZ(-173.06936645507812, -3922.546630859375, 0.0)
+    sleep 2
+    if p2 inzone Celestia/CL_Z12_Test_of_the_Spheres/StarRoom {
+        if except p1 windowvisible ['WorldView', 'windowHUD', 'wndElixirContainer', 'sprtElixir1'] {
+            print Elixir already acquired, skipping
+        } else {
+            # Elixir for everyone but p1
+            # GRAB ELIXIR
+            print GRABBING ELIXIR
+            until except p1 windowvisible ['WorldView', 'windowHUD', 'wndElixirContainer', 'sprtElixir1'] {
+                until except p1 hasxyz XYZ(-424.8884582519531, -3270.589111328125, -9.1552734375e-05) {
+                    except p1 tp XYZ(-424.8884582519531, -3270.589111328125, -9.1552734375e-05)
+                }
+                until except p1 windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+                    sleep 0.1
+                }
+                while except p1 windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+                    except p1 sendkey X, 0.1
+                }
+                until except p1 windowvisible ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton'] {
+                    sleep 0.1
+                }
+                while except p1 windowvisible ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton'] {
+                    except p1 clickwindow ['WorldView', 'NPCServicesWin', 'ControlSprite', 'optionsLayout', 'NPCServicesOptionWindow', 'OptionButton']
+                }
+            }
+            times 5 {
+                except p1 clickwindow ['WorldView', 'NPCServicesWin', 'wndDialogMain', 'Exit']
+            }
+        }
+    } else {
+        print Not in the correct zone, should be in Celestia/CL_Z12_Test_of_the_Spheres/StarRoom
+        print Fixing...
+        # fix it
+    }
+    sleep 1
+}
+
+block exit_TOTS {
+    while not p2 inzone Celestia/CL_Hub {
+        if not loading {
+            sleep 1
+            except p1 tp XYZ(140.42445373535156, -5175.6884765625, 0.0)
+            sleep 1
+            except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+        }
+        sleep 1
+        print Waiting for p2 to exit star room
+    }
 }
 
 block gotobg_sigil {
-
+    if inzone Celestia/CL_Hub {
+        print Going to bg sigil
+        sleep 0.3
+        except p1 tp XYZ(-7.791812896728516, 13870.3427734375, -1099.699951171875)
+        sleep 0.3
+        except p1 tp XYZ(29.151844024658203, 12400.830078125, -1026.8914794921875)
+        sleep 0.3
+        except p1 tp XYZ(29.151844024658203, 12400.830078125, -1026.8914794921875)
+        sleep 0.2
+        except p1 tp XYZ(169.07508850097656, 11548.8544921875, -899.699951171875)
+    } else {
+        print Not in the correct zone, should be in Celestia/CL_Hub
+        if p2 inzone Celestia/CL_Z12_Test_of_the_Spheres/StarRoom {
+            call exit_TOTS
+        }
+        if p2 inzone Celestia/CL_Z11_Temple_Of_The_Sun {
+            if p1 inzone Celestia/CL_Z11_Temple_Of_The_Sun {
+                # Exit Dungeon
+                print In wrong place...
+                tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                while not inzone Celestia/CL_Hub {
+                    print Waiting for zone change
+                    sleep 4
+                }
+            } else {
+                print Exiting dungeon
+                except p1 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                except p1 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                while not except p1 inzone Celestia/CL_Hub {
+                    print Waiting for zone change
+                    sleep 4
+                }
+            }
+        }
+    }
 }
 
 
@@ -71,9 +195,13 @@ block big_salgio_combat {
 
     sleep 2
     #use potion if needed
-    p1 usepotion 10 5
+    if p1 manabelow 10% {
+        print Using potion
+        p1 usepotion
+        sleep 2
+    }
 
-    sleep 2
+    sleep 1
 
     if not samezone {
         print clients are not in the same zone
@@ -107,10 +235,10 @@ block big_salgio_combat {
     while inzone Celestia/CL_Z11_Temple_Of_The_Sun {
         print Starting Big Salgio Combat
         # Boss Area
-        sleep 2
+        sleep 1
         print Teleporting to boss area
         tp XYZ(-44.261634826660156, 23190.470703125, -1994.5316162109375)
-        sleep 2
+        sleep 1
         # Boss Location, teleport p1 and then the rest
         print Teleporting to boss location to start combat
         p1 tp XYZ(-26.361656188964844, 24880.357421875, -1944.36376953125)
@@ -119,17 +247,38 @@ block big_salgio_combat {
         print All clients are in combat
         waitforcombat completion
         print BigSalgio defeated
-        sleep 2
+        sleep 1
 
         # Exit Dungeon
         print Exiting dungeon
-        tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
-        mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-        mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-        mass clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
         while not inzone Celestia/CL_Hub {
-            print Waiting for zone change
-            sleep 4
+            # Handle p1 teleport and interaction
+            if not p1 loading {
+                print "Teleporting p1 to hub"
+                tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                sleep 1
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            }
+
+            # Handle p2 teleport and interaction
+            if not p2 loading {
+                print "Teleporting p2 to hub"
+                tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                sleep 1
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            }
+
+            # Check if both are in the same zone
+            if samezone {
+                print "Both clients are in the same zone"
+            }
+
+            sleep 1
+            print "Waiting for zone change..."
         }
     }
 }
@@ -141,7 +290,8 @@ while inzone Celestia/CL_Hub {
         call bg_sigil
     } else {
         call goto_elixir
-        call elixir_sigil
+        call elixir
+        call exit_TOTS
         call gotobg_sigil
         call bg_sigil
     }
