@@ -265,12 +265,16 @@ block big_salgio_combat {
         # Exit Dungeon
         print Exiting dungeon
         while not inzone Celestia/CL_Hub {
-            print "Teleporting to hub"
-            tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
-            sleep 1
-            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            if not loading {
+                if samezone {
+                    print "Teleporting to hub"
+                    tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                    sleep 1
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                }
+            }
 
             if not p1 inzone Celestia/CL_Hub {
                 if not p1 loading {
