@@ -7,26 +7,15 @@ block bg_sigil {
         walkto XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
         sleep 2
 
-        loop {
-            if p1 healthabove 90% {
-                print condition met; health is above 90% (1)
-                break
-            }
-            if p1 healthbelow 90% {
-                print hp is below 90%
-                times 30 {
-                    if p1 healthabove 90% {
-                        print condition met in times; health is above 90% (2)
-                        break
-                    }
-                    print sleeping (3)
-                    sleep 1
+        if p1 healthbelow 90% {
+            times 30 {
+                if p1 healthabove 90% {
+                    break
                 }
-            print final break (4)
-            break
+                print Waiting for p1 to heal...
+                sleep 1
             }
         }
-        print condition met or time passed
 
         if p1 manabelow 6% {
             p1 entitytp Mana
@@ -50,6 +39,15 @@ block bg_sigil {
                     sendkey X, 0.1
                     sleep 13
                 }
+            }
+        }
+        if loading {
+            times 10 {
+                if not loading {
+                    break
+                }
+                print Loading...
+                sleep 1
             }
         }
     }
