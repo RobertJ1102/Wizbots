@@ -7,38 +7,49 @@ block bg_sigil {
         walkto XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
         sleep 2
 
-        # health Check
-        while not p1 healthabove 90% {
-            print p1 hp is below 90%
-            loop {
-                sleep 1
-                if p1 healthabove 90% {
-                    break
+        loop {
+            if p1 healthabove 90% {
+                print condition met; health is above 90% (1)
+                break
+            }
+            if p1 healthbelow 90% {
+                print hp is below 90%
+                times 30 {
+                    if p1 healthabove 90% {
+                        print condition met in times; health is above 90% (2)
+                        break
+                    }
+                    print sleeping (3)
+                    sleep 1
                 }
+            print final break (4)
+            break
             }
         }
+        print condition met or time passed
 
         if p1 manabelow 6% {
             p1 entitytp Mana
             sleep 0.1
             p1 tp XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
         }
-
-        if windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
-            print Pressing X...
-            sendkey X, 0.1
-            sendkey X, 0.1
-            sendkey X, 0.1
-            sleep 13
-        } else {
-            if inzone Celestia/CL_Hub {
-                print Sigil Failsafe Activated
-                tp XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
-                sleep 1
+        if not loading {
+            if windowvisible ['WorldView', 'NPCRangeWin', 'imgBackground'] {
+                print Pressing X...
                 sendkey X, 0.1
                 sendkey X, 0.1
                 sendkey X, 0.1
                 sleep 13
+            } else {
+                if inzone Celestia/CL_Hub {
+                    print Sigil Failsafe Activated
+                    tp XYZ(687.2861938476562, 11123.978515625, -899.699951171875)
+                    sleep 1
+                    sendkey X, 0.1
+                    sendkey X, 0.1
+                    sendkey X, 0.1
+                    sleep 13
+                }
             }
         }
     }
@@ -254,24 +265,34 @@ block big_salgio_combat {
         # Exit Dungeon
         print Exiting dungeon
         while not inzone Celestia/CL_Hub {
-            # Handle p1 teleport and interaction
-            if not p1 loading {
-                print "Teleporting p1 to hub"
-                p1 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
-                sleep 1
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            print "Teleporting to hub"
+            tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+            sleep 1
+            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+            clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+
+            if not p1 inzone Celestia/CL_Hub {
+                if not p1 loading {
+                    print "Teleporting p1 to hub"
+                    p1 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                    sleep 1
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                }
             }
 
-            # Handle p2 teleport and interaction
-            if not p2 loading {
-                print "Teleporting p2 to hub"
-                p2 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
-                sleep 1
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
-                clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+
+            if not p2 inzone Celestia/CL_Hub {
+                if not p2 loading {
+                    print "Teleporting p2 to hub"
+                    p2 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                    sleep 1
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                    clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
+                }
             }
 
             # Check if both are in the same zone
