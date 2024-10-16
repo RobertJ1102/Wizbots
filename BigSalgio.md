@@ -8,12 +8,14 @@ block bg_sigil {
         sleep 2
 
         # health Check
-        times 30 {
-            if p1 healthabove 90% {
-                break
+        while not p1 healthabove 90% {
+            print p1 hp is below 90%
+            loop {
+                sleep 1
+                if p1 healthabove 90% {
+                    break
+                }
             }
-            print testing health
-            sleep 1
         }
 
         if p1 manabelow 6% {
@@ -255,7 +257,7 @@ block big_salgio_combat {
             # Handle p1 teleport and interaction
             if not p1 loading {
                 print "Teleporting p1 to hub"
-                tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                p1 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
                 sleep 1
                 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
                 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
@@ -265,7 +267,7 @@ block big_salgio_combat {
             # Handle p2 teleport and interaction
             if not p2 loading {
                 print "Teleporting p2 to hub"
-                tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
+                p2 tp XYZ(-26.30625343322754, -8857.177734375, 795.8013916015625)
                 sleep 1
                 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
                 clickwindow ['MessageBoxModalWindow', 'messageBoxBG', 'messageBoxLayout', 'AdjustmentWindow', 'Layout', 'centerButton']
